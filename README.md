@@ -1,3 +1,10 @@
+# Important
+After creating the conda virtual env as specified bellow you'll have to install pygame using
+
+`pip install pygame`
+
+since the pygame package is not covered by the conda spec-file.txt.
+
 # Conda environment setup
 At the root of this repo is spec-file.txt, this file contains all the information needed to set up a conda virtual environment identical to that used during development.
 
