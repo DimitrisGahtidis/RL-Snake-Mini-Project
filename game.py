@@ -1,5 +1,6 @@
 import pygame
 import random
+import numpy as np
 from enum import Enum
 from collections import namedtuple
 
@@ -62,18 +63,9 @@ class SnakeGameAI:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.direction = Direction.LEFT
-                elif event.key == pygame.K_RIGHT:
-                    self.direction = Direction.RIGHT
-                elif event.key == pygame.K_UP:
-                    self.direction = Direction.UP
-                elif event.key == pygame.K_DOWN:
-                    self.direction = Direction.DOWN
         
         # 2. move
-        self._move(self.direction) # update the head
+        self._move(action) # update the head
         self.snake.insert(0, self.head)
         
         # 3. check if game over
@@ -121,16 +113,30 @@ class SnakeGameAI:
         self.display.blit(text, [0, 0])
         pygame.display.flip()
         
-    def _move(self, direction):
+    def _move(self, action):
+        # [straight, right, left]
+
+        clockwise = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP]
+        index = clockwise.index(self.direction)
+
+        if np.array_equal(action, [1, 0, 0]):
+            new_direction = clockwise[index]
+        elif np.array_equal(action, [0, 1, 0]):
+            next_index = (index + 1) % 4
+            new_direction = clockwise[next_index]
+        else: #[0, 0, 1]
+            next_index = (index -1) % 4
+            new_direction = clockwise[next_index]
+
         x = self.head.x
         y = self.head.y
-        if direction == Direction.RIGHT:
+        if self.direction == Direction.RIGHT:
             x += BLOCK_SIZE
-        elif direction == Direction.LEFT:
+        elif self.direction == Direction.LEFT:
             x -= BLOCK_SIZE
-        elif direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             y += BLOCK_SIZE
-        elif direction == Direction.UP:
+        elif self.direction == Direction.UP:
             y -= BLOCK_SIZE
             
         self.head = Point(x, y)
