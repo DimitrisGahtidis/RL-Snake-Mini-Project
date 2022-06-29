@@ -1,4 +1,3 @@
-from gettext import npgettext
 import torch
 import random
 import numpy as np
@@ -14,6 +13,18 @@ class Agent:
      # The code below is using the train_step function inside the Qtrainer class
         self.trainer.train_step(state, action, reward, next_state, done)
     pass
+
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append((state, action, reward, next_state, done)) # append a tuples worth of information to the memory
+
+    def train_long_memory(self):
+            if len(self.memorty) > BATCH_SIZE:
+                mini_sample = random.sample(self.memory, BATCH_SIZE) # returns a batch size number of tuples
+            else: # if the memorty is lower than the batch size take the whole memory
+                mini_sample = self.memory
+            
+            states, actions, rewards, next_states, dones = zip(*mini_sample)
+
 
 def train():
     plot_scores = []
@@ -57,6 +68,6 @@ def train():
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
     pass
-
+        
 if __name__ == '__main__':
     train()
