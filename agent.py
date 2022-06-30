@@ -18,7 +18,7 @@ class Agent:
         self.memory.append((state, action, reward, next_state, done)) # append a tuples worth of information to the memory
 
     def train_long_memory(self):
-            if len(self.memorty) > BATCH_SIZE:
+            if len(self.memory) > BATCH_SIZE:
                 mini_sample = random.sample(self.memory, BATCH_SIZE) # returns a batch size number of tuples
             else: # if the memorty is lower than the batch size take the whole memory
                 mini_sample = self.memory
