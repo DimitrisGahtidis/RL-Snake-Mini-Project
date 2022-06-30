@@ -69,7 +69,7 @@ class SnakeGameAI:
         if self.food in self.snake:
             self._place_food()
         
-    def play_step(self):
+    def play_step(self, action):
         self.frame_iteration += 1
 
         # 1. collect user input
