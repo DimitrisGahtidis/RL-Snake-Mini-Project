@@ -82,6 +82,26 @@ class Agent:
             states, actions, rewards, next_states, dones = zip(*mini_sample)
 
 
+    def get_action(self, state):
+        # random moves have a tradeoff: exploration vs. exploitation
+        # the probability of executing a random move is inversely 
+        # proportional to the number of games played by the agent
+        self.epsilon = 80 - self.n_games
+        final_move = [0,0,0]
+        if random.randint(0, 200) < self.epsilon:
+            # then define a random move
+            move = random.randint(0, 2)
+            final_move[move] = 1
+        else:
+            # else get the next move as defined by the model
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model(state0)
+            move = torch.argmax(prediction).item()
+            final_move[move] = 1
+
+        return final_move
+
+
 def train():
     plot_scores = []
     plot_mean_scores = []
