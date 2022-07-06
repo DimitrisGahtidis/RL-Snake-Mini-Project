@@ -11,13 +11,14 @@ BATCH_SIZE = 1000
 LR = 0.001
 
 class Agent:
-    def __init__(self):
+    def __init__(self, pre_trained=False):
         self.n_games = 0
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
         self.model = Linear_QNet(11, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.pre_trained = pre_trained
 
     def get_state(self, game):
         head = game.snake[0]
@@ -86,7 +87,8 @@ class Agent:
         # random moves have a tradeoff: exploration vs. exploitation
         # the probability of executing a random move is inversely 
         # proportional to the number of games played by the agent
-        self.epsilon = 80 - self.n_games
+        if self.pre_trained is False:
+            self.epsilon = 80 - self.n_games
         final_move = [0,0,0]
         if random.randint(0, 200) < self.epsilon:
             # then define a random move
@@ -107,7 +109,22 @@ def train():
     plot_mean_scores = []
     total_score = 0
     record = 0
-    agent = Agent()
+    lifetime = 10000
+    response = input("Would you like to load the most recent model [y/n]:")
+
+    if response == 'y':
+        load = True
+    elif response == 'n':
+        load = False
+    else:
+        exit()
+    
+    if load is True:
+        agent = Agent(pre_trained=True)
+        agent.model.load()
+    else:
+        agent = Agent()
+        
     game = SnakeGameAI()
     while True:
         # get old state
@@ -143,7 +160,9 @@ def train():
             mean_score = total_score / agent.n_games
             plot_mean_scores.append(mean_score)
             plot(plot_scores, plot_mean_scores)
-    pass
+        if agent.n_games == lifetime:
+            exit()
+        
         
 if __name__ == '__main__':
     train()
